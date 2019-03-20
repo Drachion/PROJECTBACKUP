@@ -26,7 +26,8 @@
 				<th>Song Title</th>
 				<th>Item Price</th>
 				<th>Total</th>
-				<th>Quantity</th>
+                <th>Quantity</th>
+                <!-- Buttons to increment/decrement -->
                 <th>dec.</th>
                 <th>inc.</th>
 			</tr>
@@ -38,6 +39,7 @@
                     <tr>
                         <td>@i.getItem.getName</td>
                         <td>@i.getItem.getDescription()</td>
+                        <!-- Formatted to euros -->
                         <td>&euro; @("%.2f".format(i.getPrice))</td>
                         <td>&euro; @("%.2f".format(i.getItemTotal))</td>
                         <td>@i.getQuantity()</td>

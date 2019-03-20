@@ -9,40 +9,40 @@
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 	<style>
 	    .footer { font-weight: bold; color: white; background-color: black; i}
-	    .sidecol { font-weight: bold; background-color: grey; }
+	    .sidecol { font-weight: bold; background-color: rgb(2, 163, 83); border-width: thick; border-color: black}
 	    .sidecol h2 { font-weight: bold; }
 	    .midcol h1 { text-align: center; font-weight: bold; }
 	    .midcol h3 { text-align: center; color: grey }
 	    .redtext { color: rgb(128, 12, 12); }
 	</style>
-	<title>The Sound Garden @pagename</title>
-    </head>
-    <body>
-	<nav class="navbar navbar-inverse">
-	    <div class="container-fluid">
-			<div class="navbar-header">
-		    	<a class="navbar-brand" href="#">The Sound Garden</a>
-			</div>
-			<ul class="nav navbar-nav">
-                <li @if(pagename == "Home"){class = "active"}><a href ="@routes.HomeController.index()">Home</a></li>
-                <li @if(pagename == "On Sale"){class = "active"}><a href ="@routes.HomeController.onsale()">On Sale</a></li>
-				<li @if(pagename == "About"){class = "active"}><a href ="@routes.HomeController.about()">About</a></li>
-				<li @if(pagename == "Register") {class="active"}><a href="@routes.LoginController.registerUser()">Register user</a></li>
-			@if((user != null) && ("admin".equals(user.getRole()))) {
-				<li @if(pagename == "Administrators") {class="active"}><a href="@routes.HomeController.usersAdmin()">View Admin</a></li>
-				<li @if(pagename == "Customers") {class="active"}><a href="@routes.HomeController.usersCustomer()">View Customers</a></li>
+	<title>The Soundgarden @pagename</title>
+</head>
+<body>
+<nav class="navbar navbar-inverse">
+	<div class="container-fluid">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="@routes.HomeController.index()">The Soundgarden</a>
+	</div>
+	<ul class="nav navbar-nav">
+		<li @if(pagename == "Home") {class="active"}><a href="@routes.HomeController.index()">Home</a></li>
+		<li @if(pagename == "On Sale") {class="active"}><a href="@routes.HomeController.onsale()">On Sale</a></li>
+		<li @if(pagename == "About") {class="active"}><a href="@routes.HomeController.about()">About</a></li>
 
-}
-				<li @if(pagename == "Log In"){class = "active"}>
-					@if(user != null) {
-						<a href ="@routes.LoginController.logout()">Log Out</a> 
-					} else {
-						<a href ="@routes.LoginController.login()">Log In</a> 
-					}
-				</li>	
-            </ul>
-	    </div>
-	</nav>
+	</ul>
+		<!-- These lines make the register user/logging in and out links appear on the right side of the screen, with accompanying icons! -->
+		<ul class="nav navbar-nav navbar-right">
+		<li @if(pagename == "Register") {class="active"}><a href="@routes.LoginController.registerUser()"><span class="glyphicon glyphicon-user"></span> Register user</a></li>
+		<li @if(pagename == "Log In") {class="active"}>
+			@if(user != null) {
+				<a href="@routes.LoginController.logout()"><span class="glyphicon glyphicon-log-in"></span> Log Out</a>
+			} else {
+				<a href="@routes.LoginController.login()"><span class="glyphicon glyphicon-log-in"></span> Log In</a>
+		</li>
+		</ul>
+} 
+	
+	</div>
+</nav>
 
 	<div class="container-fluid">
 	    <div class="row">
@@ -75,6 +75,10 @@
 		</div>
 	    </div>
 	</div>
+
+    <!-- Logo wont display? -->
+	<!-- <img src="public\images\logo.JPG" alt="Logo"> -->
+
 	<script src="@routes.Assets.versioned("javascripts/main.js")"></script>
     </body>
 </html>
