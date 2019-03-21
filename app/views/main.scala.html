@@ -2,83 +2,136 @@
 
 <!DOCTYPE html>
 <html>
-    <head>
-    <link rel="icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">   
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta charset="UTF-8"/>
+
+<head>
+	<link rel="icon" type="image/png" href="@routes.Assets.versioned(" images/favicon.ico")"> <meta name="viewport"
+		content="width=device-width, initial-scale=1.0">
+	<meta charset="UTF-8" />
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 	<style>
-	    .footer { font-weight: bold; color: white; background-color: black; i}
-	    .sidecol { font-weight: bold; background-color: rgb(2, 163, 83); border-width: thick; border-color: black}
-	    .sidecol h2 { font-weight: bold; }
-	    .midcol h1 { text-align: center; font-weight: bold; }
-	    .midcol h3 { text-align: center; color: grey }
-	    .redtext { color: rgb(128, 12, 12); }
+		.footer {
+			font-weight: bold;
+			color: white;
+			background-color: black;
+			i
+		}
+
+		.sidecol {
+			font-weight: bold;
+			background-color: rgb(2, 163, 83);
+			border-width: thick;
+			border-color: black
+		}
+
+		.sidecol h2 {
+			font-weight: bold;
+		}
+
+		.midcol h1 {
+			text-align: center;
+			font-weight: bold;
+		}
+
+		.midcol h3 {
+			text-align: center;
+			color: grey
+		}
+
+		.redtext {
+			color: rgb(128, 12, 12);
+		}
+
+		IMG.displayed {
+			display: block;
+			margin-left: auto;
+			margin-right: auto
+		}
 	</style>
 	<title>The Soundgarden @pagename</title>
 </head>
+
 <body>
-<nav class="navbar navbar-inverse">
+	<nav class="navbar navbar-inverse">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<a class="navbar-brand" href="@routes.HomeController.index()">The Soundgarden</a>
+			</div>
+			<ul class="nav navbar-nav">
+				<li @if(pagename=="Home" ) {class="active" }><a href="@routes.HomeController.index()">Home</a></li>
+				<li @if(pagename=="On Sale" ) {class="active" }><a href="@routes.HomeController.onsale()">On Sale</a>
+				</li>
+
+				<!-- Only customers can see the basket -->
+				@if((user != null) && ("customer".equals(user.getRole()))) {
+				<li @if(pagename=="Basket" ) {class="active" }><a href="@routes.ShoppingCtrl.showBasket()">Basket</a>
+				</li>
+				}
+
+				<li @if(pagename=="About" ) {class="active" }><a href="@routes.HomeController.about()">About</a></li>
+
+
+
+				<!-- Only admins can see the list of customer/admins -->
+				@if((user != null) && ("admin".equals(user.getRole()))) {
+				<li @if(pagename=="Customers" ) {class="active" }><a
+						href="@routes.HomeController.usersCustomer()">Customers</a></li>
+				<li @if(pagename=="Admin" ) {class="active" }><a href="@routes.HomeController.usersAdmin()">Admins</a>
+				</li>
+				}
+			</ul>
+			<!-- These lines make the register user/logging in and out links appear on the right side of the screen, with accompanying icons! -->
+			<ul class="nav navbar-nav navbar-right">
+				<li @if(pagename=="Register" ) {class="active" }><a href="@routes.LoginController.registerUser()"><span
+							class="glyphicon glyphicon-user"></span> Register user</a></li>
+				<li @if(pagename=="Log In" ) {class="active" }>
+					@if(user != null) {
+					<a href="@routes.LoginController.logout()"><span class="glyphicon glyphicon-log-in"></span> Log
+						Out</a>
+					} else {
+					<a href="@routes.LoginController.login()"><span class="glyphicon glyphicon-log-in"></span> Log
+						In</a>
+				</li>
+			</ul>
+			}
+
+		</div>
+	</nav>
+
 	<div class="container-fluid">
-	<div class="navbar-header">
-		<a class="navbar-brand" href="@routes.HomeController.index()">The Soundgarden</a>
-	</div>
-	<ul class="nav navbar-nav">
-		<li @if(pagename == "Home") {class="active"}><a href="@routes.HomeController.index()">Home</a></li>
-		<li @if(pagename == "On Sale") {class="active"}><a href="@routes.HomeController.onsale()">On Sale</a></li>
-		<li @if(pagename == "About") {class="active"}><a href="@routes.HomeController.about()">About</a></li>
+		<div class="row">
+			<div class="col-sm-2">
+				<div class="well sidecol">
+					<h2><span class="redtext">Sign Up</span></h2>
+					<h3>Sales/Promotions</h3>
+					<p>Opt into the sales/promotions email and recieve updates on AMAZING deals.</span>.
+				</div>
+			</div>
+			<div class="col-sm-8">
+				<div class="midcol">
+					@content
 
-	</ul>
-		<!-- These lines make the register user/logging in and out links appear on the right side of the screen, with accompanying icons! -->
-		<ul class="nav navbar-nav navbar-right">
-		<li @if(pagename == "Register") {class="active"}><a href="@routes.LoginController.registerUser()"><span class="glyphicon glyphicon-user"></span> Register user</a></li>
-		<li @if(pagename == "Log In") {class="active"}>
-			@if(user != null) {
-				<a href="@routes.LoginController.logout()"><span class="glyphicon glyphicon-log-in"></span> Log Out</a>
-			} else {
-				<a href="@routes.LoginController.login()"><span class="glyphicon glyphicon-log-in"></span> Log In</a>
-		</li>
-		</ul>
-} 
-	
-	</div>
-</nav>
+					<IMG class="displayed" img src="@routes.Assets.versioned(" images/logo.JPG")"> </div> </div> <div
+						class="col-sm-2">
+					<div class="well sidecol">
+						<h2>Music</h2>
+						<h3>All types music to meet your needs</h3>
+						<p><span class="redtext">Sample</span> music before buying and take advantage of our <span
+								class="redtext">Smart Recommendations </span> on your return visit</p>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-12">
+					<div class="well footer">
+						Website created by James, Craig, Mark and Stephen
 
-	<div class="container-fluid">
-	    <div class="row">
-		<div class="col-sm-2">
-		    <div class="well sidecol">
-			<h2><span class="redtext">Sign Up</span></h2>
-			<h3>Sales/Promotions</h3>
-			<p>Opt into the sales/promotions email and recieve updates on AMAZING deals.</span>.
-		    </div>
+					</div>
+				</div>
+			</div>
 		</div>
-		<div class="col-sm-8">
-		    <div class="midcol">
-			@content
-			<h3>The place where you can buy fully licenced music at low prices.<br/> (as long as stocks last).</h3>
-		    </div>
-		</div>
-		<div class="col-sm-2">
-		    <div class="well sidecol">
-			<h2>Music</h2>
-			<h3>All types music to meet your needs</h3>
-			<p><span class="redtext">Sample</span> music before buying and take advantage of our <span class="redtext">Smart Recommendations </span> on your return visit</p>
-		    </div>
-		</div>
-	    </div>
-	    <div class="row">
-		<div class="col-sm-12">
-		    <div class="well footer">
-				Website created by James, Craig, Mark and Stephen
-		    </div>
-		</div>
-	    </div>
-	</div>
 
-    <!-- Logo wont display? -->
-	<!-- <img src="public\images\logo.JPG" alt="Logo"> -->
-
-	<script src="@routes.Assets.versioned("javascripts/main.js")"></script>
-    </body>
-</html>
+		<!-- Working audio, very quiet: possibly because of VM sound issues -->
+		<!-- BOING -->
+		<audio controls>
+				 <source src="@routes.Assets.versioned(" audio/boing.mp3")"> Your browser does not support the audio element.
+		</audio> <script src="@routes.Assets.versioned(" javascripts/main.js")"> </script> </body> </html>
