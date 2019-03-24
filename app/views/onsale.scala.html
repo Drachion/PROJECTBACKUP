@@ -1,7 +1,7 @@
 @(items: List[models.products.ItemOnSale],categories: List[models.products.Category],
-user: models.users.User,env: play.api.Environment)
-@main("On Sale",user){
-    <h1>On sale here</h1>
+    catId: Long, filter: String, user: models.users.User,env: play.api.Environment)
+@main(" - On Sale",user){
+    <h1>On Sale: Music for the Ages!</h1>
 
 
     @* Display successful new product message from flash, if it is set *@
@@ -10,28 +10,35 @@ user: models.users.User,env: play.api.Environment)
 			@flash.get("success")
 		</div>
 }
-    <div class="col-sm-3">
+    <div class="col-sm-2">
 		<h4>Categories</h4>
 	        <ul class="list-group">
-                    <a href = "@routes.HomeController.onsale(0)" class="list-group-item">All Categories</a>
+                    <a href = "@routes.HomeController.onsale(0, filter)" class="list-group-item">All Categories</a>
 		        @for(c<-categories) {
-			        <a href = "@routes.HomeController.onsale(c.getId())" class="list-group-item catheight">@c.getName
+			        <a href = "@routes.HomeController.onsale(c.getId(), filter)" class="list-group-item catheight">@c.getName
                         <span class="badge">@c.getItems.size</span> 
                     </a>
 			    }
             </ul>
     </div>
 
-    <div class="col-sm-9">
-        <h4>Note that all products are second hand, unless otherwise stated.</h4>
+    <div class="col-sm-10">
+        <div id="actions">
+            <form action="@routes.HomeController.onsale(catId)" method="GET">
+                <input type="search" id="searchbox" name="filter" value="@filter" placeholder="Filter by product name...">
+                <input type="submit" id="searchSubmit" value="Filter by name" class="btn-md btn-primary">
+                <!-- Empty <p> to give the search bar a little space... -->
+                <p></p>
+            </form>
+        </div>
         <table class="table table-bordered table-hover table-condensed">
             <thead>
         <!-- The header row-->
         <tr>
             <th>Image</th>
-            <th>ID</th>
             <th>Artist</th>
             <th>Song Title</th>
+            <th>Sample</th>
             <th>Stock</th>
             <th>Price</th>
             @if((user != null) && ("customer".equals(user.getRole()))) {
@@ -50,9 +57,53 @@ user: models.users.User,env: play.api.Environment)
                     } else {
                         <td><img src="/assets/images/productImages/noImage.jpg"/></td>
 }
-                  <td>@i.getId</td>
                   <td>@i.getName</td>
                   <td>@i.getDescription</td>
+                  <td><audio controls>
+
+
+
+                    <!-- Further comments by James -->
+                    <!-- Until we can figure out a way to retrieve individual tracks with associated IDs, we can use a default track as below -->
+                    <!-- Stephen's original code still present, commented out underneath -->
+
+                    @if(env.resource("public/audio/" + i.getId ).isDefined) {
+                        <!-- Need to add specific audio samples each unique & related to product ID selected - not 100% clear on how to implement this -->
+                        <source src="@routes.Assets.versioned("audio/boing.mp3")"/ type="audio/mpeg">
+                      } else {
+                          <!-- Need default audio sample -->
+                          <source src="@routes.Assets.versioned("audio/default.mp3")"/ type="audio/mpeg">
+                      }
+
+                    </audio>
+
+
+
+
+
+
+
+                <!-- </audio> -->
+                    <!-- I presume we'll need a Scala IF statement inside the src here, to call a custom method in the ItemOnSale class 
+                         which will retrieve the correct audio sample based on the product ID. Need to write this custom method.... -->
+                      <!-- Ok written above was my initial thoughts... have since edited the HC methods for saving files... -->
+                      <!-- After testing above HC methods - need to rework the logic... See commeneted out versions of addItemSubmit() and saveFile() in HC -->
+                      <!-- Once these methods are fixed - should be able to play by pulling in indv. track using the getid (like thumbnail example above) -->
+                      
+                      <!-- Ok so not sure about the validity of the Scala statement below - when applied to our audio sample. Works based on img having thumbnail... but what for audio?.... -->
+                      <!-- @if(env.resource("public/audio/" + i.getId ).isDefined) { -->
+                        <!-- Need to add specific audio samples each unique & related to product ID selected - not 100% clear on how to implement this -->
+                        <!-- <source src="@routes.Assets.versioned("audio/default.mp3")"/ type="audio/mpeg"> -->
+                      <!-- } else { -->
+                          <!-- Need default audio sample -->
+                          <!-- <source src="@routes.Assets.versioned("audio/default.mp3")"/ type="audio/mpeg"> -->
+                      }
+                <!-- </audio> -->
+                  <!-- Soundcloud option -->
+                  <!-- <iframe width="80%" height="166" scrolling="no" frameborder="no" allow="autoplay
+                      src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/293&amp;{ ADD YOUR PARAMETERS HERE }">
+                    </iframe> -->
+
                   <td>@i.getStock</td>
                   <td>&euro; @("%.2f".format(i.getPrice))</td>
 
@@ -70,9 +121,19 @@ user: models.users.User,env: play.api.Environment)
 							</a>
                         </td>
                   }
+
+
+
                   @if((user != null) && ("customer".equals(user.getRole()))) {
+                      @if(i.getStock() >0){
                         <td><a href="@routes.ShoppingCtrl.addToBasket(i.getId)" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-shopping-cart"></span></a></td>
+                      }else{
+                <td><img src="/assets/images/oos.jpg"/></td>
+                      }
                   }
+
+
+
                </tr>
             }
         

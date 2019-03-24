@@ -1,5 +1,9 @@
 @(users: List[models.users.Administrator],user: models.users.User)
-@main("Administrators",user){
+@main(" - Administrators",user){
+    <style>
+        IMG.displayed {
+            padding-bottom: 20%;
+        }</style>
     <h1>Current administrators</h1>
 
 
@@ -10,7 +14,7 @@
 		</div>
 }
 
-    <div class="col-sm-9">
+    <div class="col-sm-12">
         <h4>Here are all the current administrators on the system.</h4>
         <table class="table table-bordered table-hover table-condensed">
             <thead>

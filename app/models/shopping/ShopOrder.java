@@ -11,6 +11,7 @@ import java.util.Date;
 
 import models.products.*;
 import models.users.*;
+import java.text.SimpleDateFormat;
 
 // ShopOrder entity managed by Ebean
 @Entity
@@ -19,7 +20,7 @@ public class ShopOrder extends Model {
     @Id
     private Long id;
     
-    private Date orderDate;
+    private Calendar orderDate;
     
     // Order contains may items.
     // mappedBy makes this side of the mapping the owner
@@ -33,7 +34,7 @@ public class ShopOrder extends Model {
 
     // Default constructor
     public  ShopOrder() {
-        orderDate = new Date();
+        orderDate = Calendar.getInstance();
     }
     
     public double getOrderTotal() {
@@ -62,11 +63,11 @@ public class ShopOrder extends Model {
         this.id = id;
     }
 
-    public Date getOrderDate() {
+    public Calendar getOrderDate() {
         return orderDate;
     }
 
-    public void setOrderDate(Date orderDate) {
+    public void setOrderDate(Calendar orderDate) {
         orderDate = orderDate;
     }
 
@@ -85,4 +86,25 @@ public class ShopOrder extends Model {
     public void setCustomer(Customer customer) {
         this.customer = customer;
     }
+
+    public String getOrderDateString() {
+        if(orderDate == null) {
+            return "No Date Availible";
+        }
+        String s = new SimpleDateFormat("dd-MMM-yyyy").format(orderDate.getTime());
+        return s;
+    }
+
+    public void adjustStock(){
+        for (OrderItem i : items) {
+            ItemOnSale ios = ItemOnSale.find.byId(i.getItem().getId());
+            if (i.getItem().getId() == ios.getId()) {
+                int quantity = i.getQuantity();
+                ios.incrementStock(quantity);
+                ios.update();
+            }
+        }
+    }
+
+
 }

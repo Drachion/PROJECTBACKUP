@@ -41,8 +41,27 @@ public class ItemOnSale extends Model {
 
     public static final Finder<Long, ItemOnSale> find = new Finder<>(ItemOnSale.class);
 			    
-    public static final List<ItemOnSale> findAll() {
-        return ItemOnSale.find.all();
+    // public static final List<ItemOnSale> findAll() {
+    //     return ItemOnSale.find.all();
+    // }
+
+    //Find all Products in DB / Filter Product name
+    public static final List<ItemOnSale> findAll(String filter){
+        return ItemOnSale.find.query().where()
+                                .ilike("name", "%" + filter + "%")
+                                .orderBy("name asc")
+                                .findList();
+    }
+
+    //Find all Products in DB / Filter Product name
+    public static final List<ItemOnSale> findFilter(Long catID, String filter){
+        return ItemOnSale.find.query().where()
+                                //Only include products from matching cat ID
+                                .eq("categories.id",catID)
+                                //Name like filter value (surrounded by wildcards)
+                                .ilike("name", "%" + filter + "%")
+                                .orderBy("name asc")
+                                .findList();
     }
 
     // Accessor methods
@@ -89,4 +108,17 @@ public List<Long> getCatSelect() {
 public void setCatSelect(List<Long> catSelect) {
     this.catSelect = catSelect;
 }
+
+public void decrementStock(){
+    stock-=1;
+}
+
+public void incrementStock(){
+    stock+=1;
+}
+
+public void incrementStock(int q){
+    stock+=q;
+}
+
 }

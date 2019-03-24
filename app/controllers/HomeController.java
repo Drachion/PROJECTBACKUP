@@ -45,21 +45,22 @@ public class HomeController extends Controller {
      * this method will be called when the application receives a
      * <code>GET</code> request with a path of <code>/</code>.
      */
-    public Result onsale(Long cat) {
+    @Transactional
+    public Result onsale(Long cat, String filter) {
         List<ItemOnSale> itemList = null;
         List<Category> categoryList = Category.findAll();
 
         if(cat ==0){
-            itemList = ItemOnSale.findAll();
+            itemList = ItemOnSale.findAll(filter);
         }else {
             itemList = Category.find.ref(cat).getItems();
         }
-        return ok(onsale.render(itemList, categoryList,User.getUserById(session().get("email")),e));
-
+        return ok(onsale.render(itemList, categoryList, cat, filter, User.getUserById(session().get("email")),e));
      }
 
     public Result index() {
         return ok(index.render(User.getUserById(session().get("email"))));
+        // return redirect(routes.HomeController.onsale(0));
     }
 
     public Result about() {
@@ -102,9 +103,84 @@ public Result addItemSubmit() {
         // to encoding and decoding overhead. 
         String saveImageMessage = saveFile(newItem.getId(), image);
         flash("success", "Item " + newItem.getName() + " was added/updated" +saveImageMessage);
-        return redirect(controllers.routes.HomeController.onsale(0));
+        return redirect(controllers.routes.HomeController.onsale(0,""));
     }
 }
+
+
+    // *************************************************************************************
+    //
+    // Adapted addItemSubmit() - Needs work to allow for upload of both image and audio file
+    //
+    // *************************************************************************************
+
+
+    // @Security.Authenticated(Secured.class)
+    // @With(AuthAdmin.class)
+    // @Transactional
+    // public Result addItemSubmit() {
+    //     // We use the method bindFromRequest() to populate our Form<ItemOnSale> object with the
+    //     // data that the user submitted. Thanks to Play Framework, we do not need to do the messy
+    //     // work of parsing the request and extracting data from it character by character
+    // Form<ItemOnSale> newItemForm = formFactory.form(ItemOnSale.class).bindFromRequest();
+                        
+    // // We check for errors (based on constraints set in ItemOnSale class)
+    // if (newItemForm.hasErrors()) {
+    //     // System.out.println("Artist: " +newItemForm.field("artist").getValue().get());
+    //     // System.out.println("Song Name: " +newItemForm.field("songName").getValue().get());
+    //     // System.out.println("Stock: " +newItemForm.field("stock").getValue().get());
+    //     // System.out.println("Price: " +newItemForm.field("price").getValue().get());
+    //     // If the form data has errors, we call the method badRequest(), requesting Play
+    //     // Framework to send an error response to the user and display the additem page again.
+    //     // As we are passing in newItemForm, the form will be populated with the data that the
+    //     // user has already entered, saving them from having to enter it all over again
+    //     return badRequest(additem.render(newItemForm, User.getUserById(session().get("email"))));
+    // } else {
+    //     // If no errors are found in the form data, we extract the data from the form.
+    //     // Form objects have handy utility methods, such as the get() method we are using
+    //     // here to extract the data into an ItemOnSale object. This is possible because
+    //     // we defined the form in terms of the model class ItemOnSale
+    //     ItemOnSale newItem = newItemForm.get();
+
+    //     // To include update functionality, we check whether the item has an ID value.
+    //     // If it does, we are looking at an existing item and the right operation to
+    //     // perform is 'update'. If not, the operation to perform is 'save'
+    //     if(newItem.getId() == null) {
+    //         // We call the ORM method save() on the model object, to have it saved in the
+    //         // database as a line in the table item_on_sale
+    //         newItem.save();
+    //     } else {
+    //         // We call the ORM method update() on the model object, to have it updated
+    //         // in the database
+    //         newItem.update();
+    //     }
+
+    //     // Code added for media upload:
+    //     MultipartFormData data = request().body().asMultipartFormData();
+
+    //     // Extract files from both upload fields
+    //     FilePart audio = data.getFile("audio-upload");
+    //     FilePart image = data.getFIle("image-upload");
+
+    //     // Save both files 
+    //     String saveAudioMessage = saveFile(newItem.getId(), audio);
+    //     String saveImageMessage = saveFile(newItem.getId(), image);
+
+
+    //     // We use the flash scope to specify that we want a success message superimposed on
+    //     // the next displayed page. The flash scope uses cookies, which we can read and set
+    //     // using the flash() function of the Play Framework. The flash scope cookies last
+    //     // for a single request (unlike session cookies, which we will use for log-in in a future lab)
+    //     // So, add a success message to the flash scope
+    //     flash("success", "Item " + newItem.getName() + " was added/updated " + saveImageMessage + " " + saveAudioMessage);
+    //     // Having specified we want a message at the top, we can redirect to the onsale page,
+    //     // which will have to be modified to read the flash scope
+    //     return redirect(controllers.routes.HomeController.onsale(0));
+    //     }
+    // }
+
+
+
 public String saveFileOld(Long id, FilePart<File> uploaded) {
     // Make sure that the file exists.
     if (uploaded != null) {
@@ -141,6 +217,74 @@ public String saveFileOld(Long id, FilePart<File> uploaded) {
     }
     return "/ no image file.";
 }
+
+
+    // *************************************************************************************
+    //
+    // Adapted saveFile() - Needs work to allow for upload of both image and audio file
+    // Feel like possible approach here is to have a seperate method for audio upload handling
+    // The method below should probably also take an additional arg for audio eg; FilePart<File> uploadedA
+    // .... and if we do add that extra arg, then the method will need refactoring.
+    //
+    // *************************************************************************************
+
+
+//     public String saveFile(Long id, FilePart<File> uploaded){
+//         // Make sure file exists
+//         if (uploaded != null){
+//             // First we're checking whether file is an image before we decide what to do with it
+//             String mimeType = uploaded.getContentType();
+//             String extension = "";
+//             if ((mimeType.startsWith("image/")) || (mimeType.startsWith("audio/"))) {
+//                 //Get the file name
+//                 String fileName = uploaded.getFilename();
+//                 //Extract the extension
+//                 extension = "";
+//                 int i = fileName.lastIndexOf('.');
+//                 if (i >= 0) {
+//                     extension = fileName.substring(i +1);
+//                 }
+//             } 
+//             // Create a file object from the uploaded file part
+//             File file = uploaded.getFile();
+
+//             // Make sure our destination folder exists & if not create it
+//             // If an image file:
+//             if (mimeType.startsWith("image/")) {
+//                 File dir = new File("public/images/productImages");
+//                 if(!dir.exists()) {
+//                     dir.mkdirs();
+//                 }
+//                 // Actually save the image file
+//                 File newFile = new File("public/images/productImages" , id + "." + extension);
+//                 if (file.renameTo(newFile)){
+//                     return "/ file uploaded.";
+//                 } else {
+//                     return "/ file upload failed.";
+//                 }
+
+//             // If an audio file
+//             } if (mimeType.startsWith("audio/")) {
+//                 File dir = new File("public/audio/productAudioClips");
+//                 if(!dir.exists()) {
+//                     dir.mkdirs();
+//                 }
+//                 // Actually save the audio file
+//                 File newFile = new File("public/audio/productAudioClips" , id + "." + extension);
+//                 if (file.renameTo(newFile)){
+//                     return "/ file uploaded.";
+//                 } else {
+//                     return "/ file upload failed.";
+//                 }
+//         }
+        
+//     }
+//     return "/ no image or audio files found.";
+// }
+
+
+
+
 
 public String saveFile(Long id, FilePart<File> uploaded) {
     // Make sure that the file exists.
@@ -203,7 +347,7 @@ public Result deleteItem(Long id) {
     // Now write to the flash scope, as we did for the successful item creation.
     flash("success", "Item has been deleted.");
     // And redirect to the onsale page
-    return redirect(controllers.routes.HomeController.onsale(0));
+    return redirect(controllers.routes.HomeController.onsale(0,""));
 }
 @Security.Authenticated(Secured.class)
 public Result updateItem(Long id) {

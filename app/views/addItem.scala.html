@@ -3,7 +3,7 @@
 
 @import helper._
 
-@main("Add Item",user){
+@main(" - Add Item",user){
     <p class="lead">Add a new item</p>
 
     <!-- Use a views.html.helpers package method to create the form (instead of html)-->
@@ -36,6 +36,10 @@
             </p>
             
             @inputText(itemForm("description"), '_label -> "Song Title", 'class -> "form-control")
+
+            <label>Audio Upload</label>
+            <input class="btn-sm btn-default" type="file" name="song-upload">   
+
             @inputText(itemForm("stock"), '_label -> "Stock", 'class -> "form-control")
             @inputText(itemForm("price"), '_label -> "Price", 'class -> "form-control")
 
